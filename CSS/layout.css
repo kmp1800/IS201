@@ -1,0 +1,55 @@
+.common{
+    position: absolute;
+}
+
+body{
+    background-color: #c5b3e4;
+    /* c5b3e4; original color is #aa8fd9 but its a bit harsh. If TA says its ok cause its friends theme you can put it back to that color */
+    font-family: 'friendsfont';
+    color: black;
+    font-weight: normal;
+    font-style: inherit;
+    font-size: 15px;
+    }
+
+.header{
+    top: 5px;
+    left: 5px;
+    right: 5px;
+    height: 120px;
+    text-align: center;
+    border-bottom:2px solid black;
+
+}
+.rightmenu{
+    top:150px;
+    right: 5px;
+    width: 200px;
+    padding-left: 20px;
+    border-left: 2px solid black;
+    z-index: 2;
+    bottom: 5px;
+    position: absolute;
+    height: 690%;
+}
+.mainbody{
+    text-align: center;
+    top: 150px;
+    right: 225px;
+    left: 225px;
+    z-index: 3;
+    position: absolute;
+}
+
+.leftmenu{
+    top:150px;
+    left: 5px;
+    width: 200px;
+    padding-right: 20px;
+    border-right: 2px solid black;
+    z-index: 1;
+    bottom: 5px;
+    position: absolute;
+    height: 690%;
+}
+

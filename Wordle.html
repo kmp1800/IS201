@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wordle: The One With The Guesses</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://upload.wikimedia.org/wikipedia/en/3/35/Friends_logo.svg') no-repeat center top;
+      background-size: 1000px;
+      background-color: #5a4097;
+      background-image: url(https://preview.free3d.com/img/2018/10/2158645266687723042/gxw1qhig.jpg);
+      background-size: 110%;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin: 20px 0 10px;
+      color: #000000;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    #game {
+      display: grid;
+      gap: 5px;
+      margin: 20px 0;
+    }
+
+    .row {
+      display: flex;
+      gap: 5px;
+    }
+
+    .cell {
+      width: 45px;
+      height: 45px;
+      border: 2px solid #ccc;
+      text-align: center;
+      text-transform: uppercase;
+      font-size: 1.5rem;
+      font-weight: bold;
+      background-color: white;
+      color: #333;
+    }
+
+    .correct {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .present {
+      background-color: #ffeb3b;
+      color: black;
+    }
+
+    .absent {
+      background-color: #ccc;
+      color: #333;
+    }
+
+    #message {
+      margin-top: 10px;
+      font-size: 1.1rem;
+    }
+
+    #input {
+      margin-top: 10px;
+    }
+
+    #replay {
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: none;
+    }
+
+    input, button {
+      font-size: 1rem;
+      padding: 5px;
+    }
+    a {
+    color: #ffffff;
+}
+a:hover{
+    text-decoration: underline;
+}
+.header{
+  top: 5px;
+  position: absolute;
+}
+@font-face {
+  font-family: 'friendsfont';
+  src: url(Fonts/GABRWFFR.TTF);
+}
+h1{
+ font-family:'friendsfont';
+}
+.hiddenaudio{
+  display: none;
+}
+  </style>
+</head>
+<body>
+  <h1 class="header">The One With The Guesses</h1>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <div id="game"></div>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <p>&nbsp;</p>
+  <div id="input">
+    <input type="text" id="guessInput" placeholder="Guess the word..." autocomplete="off"/>
+    <button onclick="handleGuess()" ;
+    >Guess</button>
+    
+  </div>
+  <script>
+    function playGuessSound() {
+      const sound = document.getElementById('guessSound');
+      sound.play().catch((e) => {
+        console.log("Audio play blocked until user interacts with the page.");
+      });
+    }
+  </script>
+  
+  <audio src="audio/Friends.mp3" autoplay></audio>
+  <audio id="guessSound" src="audio/Friends.mp3" preload="auto"></audio>
+  <div id="message"></div>
+  <button id="replay" onclick="startGame()">Play Again</button>
+
+  <script>
+    const words = {
+      4: ['joey', 'ross',],
+      5: ['smelly', 'pivot','hugsy','unagi','break'],
+      6: ['janice', 'phoebe', 'monica','rachel','trifle','coffee'],
+      7: ['central', 'friends', 'fashion', 'breathe','gunther'],
+      8: ['sandwich', 'chandler', 'princess', 'lobsters'],
+    };
+
+    const chandlerQuipsLose = [
+      "Could this BE any more wrong",
+      "You were almost as off as Joey's acting!.",
+      "Smelly cat, smelly cat... it’s what you are!",
+      "You were almost as off as Joey's acting!",
+      ];
+    const chandlerQuipsWin=[
+      "Congrats! That was more impressive than my sarcasm",
+      "Could that guess BE any better?",
+    ];
+    //   "Could this BE any more wrong?",
+    //   "You were almost as off as Joey’s acting!",
+    //   "That was so bad, even Ross’s marriages lasted longer.",
+    //   "This is more awkward than Monica’s dance moves.",
+    //   "Congrats! That was more impressive than my sarcasm.",
+    //   "Game over. Unlike my career, you actually finished something."
+    
+
+    let targetWord = '';
+    let currentRow = 0;
+    let maxGuesses = 6;
+    let wordLength = 5;
+
+    function getRandomWord() {
+      const lengths = [4,5,6,7,8];
+      wordLength = lengths[Math.floor(Math.random() * lengths.length)];
+      const list = words[wordLength];
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function startGame() {
+      document.getElementById('replay').style.display = 'none';
+      document.getElementById('message').textContent = '';
+      targetWord = getRandomWord();
+      currentRow = 0;
+
+      const game = document.getElementById('game');
+      game.innerHTML = '';
+      for (let i = 0; i < maxGuesses; i++) {
+        const row = document.createElement('div');
+        row.className = 'row';
+        for (let j = 0; j < wordLength; j++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          row.appendChild(cell);
+        }
+        game.appendChild(row);
+      }
+
+      document.getElementById('guessInput').value = '';
+      document.getElementById('guessInput').maxLength = wordLength;
+      document.getElementById('guessInput').placeholder = `Enter a ${wordLength}-letter Friends word`;
+    }
+
+    function handleGuess() {
+      const input = document.getElementById('guessInput');
+      const guess = input.value.toLowerCase();
+
+      if (guess.length !== wordLength) {
+        alert(`Guess must be ${wordLength} letters`);
+        return;
+      }
+
+      const row = document.getElementsByClassName('row')[currentRow];
+      const letters = row.getElementsByClassName('cell');
+
+      const targetArr = targetWord.split('');
+      const guessArr = guess.split('');
+
+      let result = Array(wordLength).fill('absent');
+      let used = Array(wordLength).fill(false);
+
+      for (let i = 0; i < wordLength; i++) {
+        if (guessArr[i] === targetArr[i]) {
+          result[i] = 'correct';
+          used[i] = true;
+          targetArr[i] = null;
+        }
+      }
+
+      for (let i = 0; i < wordLength; i++) {
+        if (result[i] !== 'correct') {
+          const index = targetArr.indexOf(guessArr[i]);
+          if (index !== -1 && !used[index]) {
+            result[i] = 'present';
+            targetArr[index] = null;
+          }
+        }
+      }
+
+      for (let i = 0; i < wordLength; i++) {
+        letters[i].textContent = guess[i];
+        letters[i].classList.add(result[i]);
+      }
+      playGuessSound()
+      if (guess === targetWord) {
+        document.getElementById('message').textContent = `🎉 "${targetWord.toUpperCase()}" was it! ${randomQuipCorrect()}`;
+        endGame();
+      } else {
+        currentRow++;
+        if (currentRow==1)
+          playGuessSound()
+        else 
+        if (currentRow >= maxGuesses) {
+          document.getElementById('message').textContent = `Oops. It was "${targetWord.toUpperCase()}". ${randomQuipWrong()}`;
+          endGame();
+        } else {
+          input.value = '';
+        }
+      }
+    }
+
+    function randomQuipCorrect() {
+      return chandlerQuipsWin[Math.floor(Math.random() * chandlerQuipsWin.length)];
+    }
+    function randomQuipWrong() {
+      return chandlerQuipsLose[Math.floor(Math.random() * chandlerQuipsLose.length)];
+    }
+    function endGame() {
+      document.getElementById('replay').style.display = 'inline-block';
+    }
+
+    startGame();
+  </script>
+
+<a href="Scratch.html">Friends Page</a>
+
+</body>
+</html>

@@ -1,0 +1,25 @@
+ol{list-style-type: circle;}
+
+ul{list-style-type: decimal;}
+
+.undo_ol{list-style-type: none;}
+
+.undo_ul{list-style-type: circle;}
+
+a {
+    color: black;
+    text-decoration: none;
+    
+}
+a:hover{
+    text-decoration: underline;
+}
+
+@font-face {
+    font-family: 'friendsfont';
+    src: url(Fonts/GABRWFFR.TTF);
+}
+
+h2{
+    font-family: 'friendsfont';
+}
